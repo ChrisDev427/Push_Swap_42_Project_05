@@ -1,0 +1,89 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   sort_500.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chmassa <chrisdev427@gmail.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/01/02 16:59:41 by chmassa           #+#    #+#             */
+/*   Updated: 2023/01/16 17:14:47 by chmassa          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "push_swap.h"
+
+static void	rotate(t_list **lsta, t_list **lstb)
+{
+	int	maxvalue;
+	int	node_nb;
+
+	node_nb = ft_lstfind_max(lstb);
+	maxvalue = node_value(lstb, node_nb);
+	while (ft_lstfind_max(lstb) != 0)
+	{
+		rotate_b(lstb);
+		if (((*lstb)->data == maxvalue - 1)
+			|| ((*lsta)->data == maxvalue - 2))
+		{
+			push_a(lsta, lstb);
+			if ((*lsta)->data > (*lsta)->next->data)
+				swap_a(lsta);
+		}
+	}
+	push_a(lsta, lstb);
+}
+
+static void	rev_rotate(t_list **lsta, t_list **lstb)
+{
+	int	maxvalue;
+	int	node_nb;
+
+	node_nb = ft_lstfind_max(lstb);
+	maxvalue = node_value(lstb, node_nb);
+	while (ft_lstfind_max(lstb) != 0)
+	{
+		rev_rotate_b(lstb);
+		if (((*lstb)->data == maxvalue - 1)
+			|| ((*lsta)->data == maxvalue - 2))
+		{
+			push_a(lsta, lstb);
+			if ((*lsta)->data > (*lsta)->next->data)
+				swap_a(lsta);
+		}
+	}
+	push_a(lsta, lstb);
+}
+
+static void	back_to_stack_a(t_list **lsta, t_list **lstb)
+{
+	int	size;
+
+	while (ft_lstsize(*lsta) != 49)
+	{
+		if ((*lstb)->next != NULL && (*lstb)->data < (*lstb)->next->data)
+			swap_b(lstb);
+		push_a(lsta, lstb);
+	}
+	while (ft_lstsize(*lstb) != 0)
+	{
+		size = ft_lstsize(*lstb);
+		if ((*lstb)->next != NULL && (*lstb)->data < (*lstb)->next->data
+			&& (*lsta)->data > (*lsta)->next->data)
+			swap_ab(lsta, lstb);
+		if ((*lstb)->next != NULL && (*lstb)->data < (*lstb)->next->data)
+			swap_b(lstb);
+		if ((*lsta)->data > (*lsta)->next->data)
+			swap_a(lsta);
+		if ((size - ft_lstfind_max(lstb)) >= (size / 2))
+			rotate(lsta, lstb);
+		else if ((size - ft_lstfind_max(lstb)) < (size / 2))
+			rev_rotate(lsta, lstb);
+	}
+}
+
+void	sort_500(t_list **lsta, t_list **lstb)
+{	
+	split_stack500(lsta, lstb);
+	sort_stack_a_500(lsta, lstb);
+	back_to_stack_a(lsta, lstb);
+}
